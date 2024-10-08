@@ -10,7 +10,7 @@ from city_scrapers.spiders.fortx_Fort_Worth_Boards import FortxFortWorthBoardsSp
 
 test_response = file_response(
     join(dirname(__file__), "files", "fortx_Fort_Worth_Boards.json"),
-    url="https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US",
+    url="https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US",  # noqa
 )
 spider = FortxFortWorthBoardsSpider()
 
@@ -27,13 +27,24 @@ def test_count():
 
 
 def test_title():
-    assert parsed_items[0]["title"] == "Notice of Public Comment for Brownsfields Program"
-    assert parsed_items[1]["title"] == "DFW International Airport Board Operations Committee"
+    assert (
+        parsed_items[0]["title"] == "Notice of Public Comment for Brownsfields Program"
+    )
+    assert (
+        parsed_items[1]["title"]
+        == "DFW International Airport Board Operations Committee"
+    )
 
 
 def test_description():
-    assert parsed_items[0]["description"] == "Notice of Public Comment for Analysis of Brownfields Cleanup Alternatives (ABCA) document prepared by the Brownsfields Program"
-    assert parsed_items[1]["description"] == "DFW International Airport Board Operations Committee"
+    assert (
+        parsed_items[0]["description"]
+        == "Notice of Public Comment for Analysis of Brownfields Cleanup Alternatives (ABCA) document prepared by the Brownsfields Program"  # noqa
+    )
+    assert (
+        parsed_items[1]["description"]
+        == "DFW International Airport Board Operations Committee"
+    )
 
 
 def test_start():
@@ -42,7 +53,7 @@ def test_start():
 
 
 def test_end():
-    assert parsed_items[0]["end"] == None
+    assert parsed_items[0]["end"] is None
 
 
 def test_time_notes():
@@ -50,7 +61,10 @@ def test_time_notes():
 
 
 def test_id():
-    assert parsed_items[0]["id"] == "fortx_Fort_Worth_Boards/202410010000/x/notice_of_public_comment_for_brownsfields_program"
+    assert (
+        parsed_items[0]["id"]
+        == "fortx_Fort_Worth_Boards/202410010000/x/notice_of_public_comment_for_brownsfields_program"  # noqa
+    )
 
 
 def test_status():
@@ -58,29 +72,31 @@ def test_status():
 
 
 def test_location():
-    assert parsed_items[0]["location"] == {
-        'name': '',
-        'address': 'Fort Worth, TX'
-    }
+    assert parsed_items[0]["location"] == {"name": "", "address": "Fort Worth, TX"}
     assert parsed_items[1]["location"] == {
-        'name': 'Board Room – DFW Headquarters Building',
-        'address': '2400 Aviation Dr., DFW Airport, 75261, TX'
+        "name": "Board Room – DFW Headquarters Building",
+        "address": "2400 Aviation Dr., DFW Airport, 75261, TX",
     }
     assert parsed_items[5]["location"] == {
-        'name': 'City Hall',
-        'address': '200 Texas St, Fort Worth, 76102, TX',
+        "name": "City Hall",
+        "address": "200 Texas St, Fort Worth, 76102, TX",
     }
 
 
 def test_source():
-    assert parsed_items[0]["source"] == "https://www.fortworthtexas.gov/calendar/boards-commission"
+    assert (
+        parsed_items[0]["source"]
+        == "https://www.fortworthtexas.gov/calendar/boards-commission"
+    )
 
 
 def test_links():
-    assert parsed_items[0]["links"] == [{
-        "title": "Link",
-        "href": "https://www.fortworthtexas.gov/departments/citysecretary/events/2024-Public-Notice-Public-Comment"
-    }]
+    assert parsed_items[0]["links"] == [
+        {
+            "title": "Link",
+            "href": "https://www.fortworthtexas.gov/departments/citysecretary/events/2024-Public-Notice-Public-Comment",  # noqa
+        }
+    ]
 
 
 def test_classification():

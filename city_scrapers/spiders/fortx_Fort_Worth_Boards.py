@@ -1,9 +1,8 @@
+import requests
 from city_scrapers_core.constants import COMMISSION
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
-import pdb
 from dateutil.parser import parse
-import requests
 
 
 class FortxFortWorthBoardsSpider(CityScrapersSpider):
@@ -16,31 +15,30 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
     # https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US
     # API endpoint when clicking on calendar
     # https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId=788ffb59-05d1-457d-b9dd-423d4b95a06e&contentId=e3182d81-2385-4796-809f-8a330d1c7ec9&language=en-US&mainContentId=e3182d81-2385-4796-809f-8a330d1c7ec9
-    start_urls = ["https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US"]
+    start_urls = [
+        "https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US"  # noqa
+    ]
 
     def parse(self, response):
         """
-        `parse` should always `yield` Meeting items.
-
-        Change the `_parse_title`, `_parse_start`, etc methods to fit your scraping
-        needs.
+        Parse meetings from multiple API responses.
         """
 
         data = response.json()
 
-        for calendar_day in data['data']:
-            for item in calendar_day['Items']:
-                # make an additional API request to get additional info about the meeting
-                info_url = f"https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId={item['CalendarId']}&contentId={item['Id']}&language=en-US&mainContentId={item['Id']}"
+        for calendar_day in data["data"]:
+            for item in calendar_day["Items"]:
+                # make another API requests to get more info about meeting
+                info_url = f"https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId={item['CalendarId']}&contentId={item['Id']}&language=en-US&mainContentId={item['Id']}"  # noqa
                 # pdb.set_trace()
-                headers = { "User-Agent": "" }
-                info = requests.get(info_url, headers=headers).json()['data']
+                headers = {"User-Agent": ""}
+                info = requests.get(info_url, headers=headers).json()["data"]
 
                 meeting = Meeting(
-                    title=item['Name'],
-                    description=info['Description'],
+                    title=item["Name"],
+                    description=info["Description"],
                     classification=COMMISSION,
-                    start=parse(item['DateTime'], dayfirst=True),
+                    start=parse(item["DateTime"], dayfirst=True),
                     end=None,
                     all_day=False,
                     time_notes="",
@@ -59,24 +57,24 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
         Generate location from another API call.
         The API call is triggered by clicking on a calendar item on the page.
         """
-        obj = info['Address']
-        venue = obj['Venue']
-        street = obj['Street']
-        suburb = obj['Suburb']
-        zip = obj['PostCode']
-        values = [street, suburb, zip, 'TX']
+        obj = info["Address"]
+        venue = obj["Venue"]
+        street = obj["Street"]
+        suburb = obj["Suburb"]
+        zip = obj["PostCode"]
+        values = [street, suburb, zip, "TX"]
 
         # filter out empty strings
-        address = ', '.join(value for value in values if value)
+        address = ", ".join(value for value in values if value)
 
-        return { 'name': venue, 'address': address }
+        return {"name": venue, "address": address}
 
     def _parse_links(self, info):
         """Parse or generate links."""
         links = []
-        link = info['Link']
+        link = info["Link"]
         if link:
-            links.append({'title': 'Link', "href": link})
+            links.append({"title": "Link", "href": link})
         return links
 
     def _parse_source(self, response):
