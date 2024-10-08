@@ -30,7 +30,6 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
             for item in calendar_day["Items"]:
                 # make another API requests to get more info about meeting
                 info_url = f"https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId={item['CalendarId']}&contentId={item['Id']}&language=en-US&mainContentId={item['Id']}"  # noqa
-                # pdb.set_trace()
                 headers = {"User-Agent": ""}
                 info = requests.get(info_url, headers=headers).json()["data"]
 
