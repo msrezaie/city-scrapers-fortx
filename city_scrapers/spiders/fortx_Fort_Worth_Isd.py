@@ -45,18 +45,24 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
     def _parse_start(self, day):
         """Parse start datetime as a naive datetime object."""
         with_tz = day.css(".fsStartTime::attr(datetime)").get()
+        if not with_tz:
+            return None
         no_tz = self._strip_timezone(with_tz)
         return parse(no_tz)
 
     def _parse_end(self, day):
         """Parse end datetime as a naive datetime object."""
         with_tz = day.css(".fsEndTime::attr(datetime)").get()
+        if not with_tz:
+            return None
         no_tz = self._strip_timezone(with_tz)
         return parse(no_tz)
 
     def _parse_location(self, day):
         """Parse or generate location."""
         name = day.css(".fsLocation::text").get()
+        if not name:
+            name = "TBD"
         return {"name": name, "address": ""}
 
     def _parse_links(self, day):
