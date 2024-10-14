@@ -1,6 +1,9 @@
-from city_scrapers_core.constants import NOT_CLASSIFIED
+from city_scrapers_core.constants import BOARD
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
+from dateutil.parser import parse
+import requests
+import pdb
 
 
 class FortxFortWorthIsdSpider(CityScrapersSpider):
@@ -16,17 +19,22 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
         Change the `_parse_title`, `_parse_start`, etc methods to fit your scraping
         needs.
         """
-        for item in response.css(".meetings"):
+
+        # get calendar month
+        month = response.css('.fsCalendarMonthBrowser span::text').get()
+
+        # loop thru all dates that have events on them
+        for day in response.css('.fsStateHasEvents'):
             meeting = Meeting(
-                title=self._parse_title(item),
-                description=self._parse_description(item),
-                classification=self._parse_classification(item),
-                start=self._parse_start(item),
-                end=self._parse_end(item),
-                all_day=self._parse_all_day(item),
-                time_notes=self._parse_time_notes(item),
-                location=self._parse_location(item),
-                links=self._parse_links(item),
+                title=day.css('.fsCalendarTitle::text').get(),
+                description="",
+                classification=BOARD,
+                start=self._parse_start(day),
+                end=self._parse_end(day),
+                all_day=False,
+                time_notes="",
+                location=self._parse_location(day),
+                links=self._parse_links(day),
                 source=self._parse_source(response),
             )
 
@@ -35,44 +43,34 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
 
             yield meeting
 
-    def _parse_title(self, item):
-        """Parse or generate meeting title."""
-        return ""
-
-    def _parse_description(self, item):
-        """Parse or generate meeting description."""
-        return ""
-
-    def _parse_classification(self, item):
-        """Parse or generate classification from allowed options."""
-        return NOT_CLASSIFIED
-
-    def _parse_start(self, item):
+    def _parse_start(self, day):
         """Parse start datetime as a naive datetime object."""
-        return None
+        with_tz = day.css('.fsStartTime::attr(datetime)').get()
+        no_tz = '-'.join(with_tz.split('-')[:-1])
+        return parse(no_tz)
 
-    def _parse_end(self, item):
+    def _parse_end(self, day):
         """Parse end datetime as a naive datetime object. Added by pipeline if None"""
-        return None
+        with_tz = day.css('.fsEndTime::attr(datetime)').get()
+        no_tz = '-'.join(with_tz.split('-')[:-1])
+        return parse(no_tz)
 
-    def _parse_time_notes(self, item):
-        """Parse any additional notes on the timing of the meeting"""
-        return ""
-
-    def _parse_all_day(self, item):
-        """Parse or generate all-day status. Defaults to False."""
-        return False
-
-    def _parse_location(self, item):
+    def _parse_location(self, day):
         """Parse or generate location."""
+        name = day.css('.fsLocation::text').get()
         return {
-            "address": "",
-            "name": "",
+            "name": name,
+            "address": ""
         }
 
-    def _parse_links(self, item):
-        """Parse or generate links."""
-        return [{"href": "", "title": ""}]
+    def _parse_links(self, day):
+        """
+        Parse links.
+        Agenda link appears after clicking on meeting in calendar.
+        It generates a request and returns HTML.
+        This request requires more HTML parsing. Skipping for now.
+        """
+        return []
 
     def _parse_source(self, response):
         """Parse or generate source."""
