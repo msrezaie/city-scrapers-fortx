@@ -25,6 +25,7 @@ freezer.stop()
 def test_count():
     assert len(parsed_items) == 2
 
+
 def test_title():
     assert parsed_items[0]["title"] == "Special School Board Meeting"
     assert parsed_items[1]["title"] == "Regular School Board Meeting"
@@ -47,7 +48,10 @@ def test_time_notes():
 
 
 def test_id():
-    assert parsed_items[0]["id"] == "fortx_Fort_Worth_Isd/202410081730/x/special_school_board_meeting"
+    assert (
+        parsed_items[0]["id"]
+        == "fortx_Fort_Worth_Isd/202410081730/x/special_school_board_meeting"
+    )
 
 
 def test_status():
@@ -57,12 +61,15 @@ def test_status():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "Fort Worth ISD District Service Center",
-        "address": ""
+        "address": "",
     }
 
 
 def test_source():
-    assert parsed_items[0]["source"] == "https://www.fwisd.org/board/board-of-education/board-calendar"
+    assert (
+        parsed_items[0]["source"]
+        == "https://www.fwisd.org/board/board-of-education/board-calendar"
+    )
 
 
 def test_links():

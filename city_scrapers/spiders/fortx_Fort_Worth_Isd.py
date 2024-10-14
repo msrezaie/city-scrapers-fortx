@@ -2,8 +2,6 @@ from city_scrapers_core.constants import BOARD
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
 from dateutil.parser import parse
-import requests
-import pdb
 
 
 class FortxFortWorthIsdSpider(CityScrapersSpider):
@@ -20,13 +18,10 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
         needs.
         """
 
-        # get calendar month
-        month = response.css('.fsCalendarMonthBrowser span::text').get()
-
         # loop thru all dates that have events on them
-        for day in response.css('.fsStateHasEvents'):
+        for day in response.css(".fsStateHasEvents"):
             meeting = Meeting(
-                title=day.css('.fsCalendarTitle::text').get(),
+                title=day.css(".fsCalendarTitle::text").get(),
                 description="",
                 classification=BOARD,
                 start=self._parse_start(day),
@@ -45,23 +40,20 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
 
     def _parse_start(self, day):
         """Parse start datetime as a naive datetime object."""
-        with_tz = day.css('.fsStartTime::attr(datetime)').get()
-        no_tz = '-'.join(with_tz.split('-')[:-1])
+        with_tz = day.css(".fsStartTime::attr(datetime)").get()
+        no_tz = "-".join(with_tz.split("-")[:-1])
         return parse(no_tz)
 
     def _parse_end(self, day):
-        """Parse end datetime as a naive datetime object. Added by pipeline if None"""
-        with_tz = day.css('.fsEndTime::attr(datetime)').get()
-        no_tz = '-'.join(with_tz.split('-')[:-1])
+        """Parse end datetime as a naive datetime object."""
+        with_tz = day.css(".fsEndTime::attr(datetime)").get()
+        no_tz = "-".join(with_tz.split("-")[:-1])
         return parse(no_tz)
 
     def _parse_location(self, day):
         """Parse or generate location."""
-        name = day.css('.fsLocation::text').get()
-        return {
-            "name": name,
-            "address": ""
-        }
+        name = day.css(".fsLocation::text").get()
+        return {"name": name, "address": ""}
 
     def _parse_links(self, day):
         """
