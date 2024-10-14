@@ -38,16 +38,20 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
 
             yield meeting
 
+    def _strip_timezone(self, string):
+        """Helper method to strip timezone information."""
+        return "-".join(string.split("-")[:-1])
+
     def _parse_start(self, day):
         """Parse start datetime as a naive datetime object."""
         with_tz = day.css(".fsStartTime::attr(datetime)").get()
-        no_tz = "-".join(with_tz.split("-")[:-1])
+        no_tz = self._strip_timezone(with_tz)
         return parse(no_tz)
 
     def _parse_end(self, day):
         """Parse end datetime as a naive datetime object."""
         with_tz = day.css(".fsEndTime::attr(datetime)").get()
-        no_tz = "-".join(with_tz.split("-")[:-1])
+        no_tz = self._strip_timezone(with_tz)
         return parse(no_tz)
 
     def _parse_location(self, day):
