@@ -8,7 +8,9 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
     name = "fortx_Fort_Worth_Isd_Coc"
     agency = "Fort Worth ISD Citizens' Oversight Committee"
     timezone = "America/Chicago"
-    start_urls = ["https://www.fwisd.org/departments/operations/capital-improvement-program/2021-citizens-oversight-committee-coc"]
+    start_urls = [
+        "https://www.fwisd.org/departments/operations/capital-improvement-program/2021-citizens-oversight-committee-coc"  # noqa
+    ]
 
     def parse(self, response):
         """
@@ -20,9 +22,8 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
 
         location = {
             "name": "Fort Worth ISD District Service Center",
-            "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116"
+            "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116",
         }
-
 
         # go over the new events
         for item in response.css(".fsDayContainer"):
@@ -67,7 +68,7 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
 
     def _parse_upcoming_title(self, item):
         """Parse or generate meeting title."""
-        return item.css('.fsTitle a::text').get()
+        return item.css(".fsTitle a::text").get()
 
     def _parse_past_title(self, item):
         """Parse or generate meeting title."""
@@ -79,21 +80,21 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
 
     def _parse_upcoming_start(self, item):
         """Parse upcoming start datetime as a naive datetime object."""
-        datetime = item.css('.fsStartTime::attr(datetime)').get()
-        date, time = datetime.split('T')
-        time = time.split('-')[0]
+        datetime = item.css(".fsStartTime::attr(datetime)").get()
+        date, time = datetime.split("T")
+        time = time.split("-")[0]
         return parse(f"{date} {time}")
 
     def _parse_past_start(self, item):
         """Parse past start date as a naive datetime object."""
-        date = item.css('td::text').get()
+        date = item.css("td::text").get()
         return parse(date)
 
     def _parse_upcoming_end(self, item):
         """Parse end datetime as a naive datetime object. Added by pipeline if None"""
-        datetime = item.css('.fsEndTime::attr(datetime)').get()
-        date, time = datetime.split('T')
-        time = time.split('-')[0]
+        datetime = item.css(".fsEndTime::attr(datetime)").get()
+        date, time = datetime.split("T")
+        time = time.split("-")[0]
         return parse(f"{date} {time}")
 
     def _parse_all_day(self, item):
@@ -103,10 +104,10 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
     def _parse_past_links(self, item):
         """Parse or generate links."""
         links = []
-        cells = item.css('td')
-        agenda_link = cells[1].css('a::attr(href)').get()
-        presentation_link = cells[2].css('a::attr(href)').get()
-        minutes_link = cells[3].css('a::attr(href)').get()
+        cells = item.css("td")
+        agenda_link = cells[1].css("a::attr(href)").get()
+        presentation_link = cells[2].css("a::attr(href)").get()
+        minutes_link = cells[3].css("a::attr(href)").get()
         if agenda_link:
             links.append({"title": "Agenda", "href": agenda_link})
         if presentation_link:

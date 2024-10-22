@@ -10,7 +10,7 @@ from city_scrapers.spiders.fortx_Fort_Worth_Isd_Coc import FortxFortWorthIsdCocS
 
 test_response = file_response(
     join(dirname(__file__), "files", "fortx_Fort_Worth_Isd_Coc.html"),
-    url="https://www.fwisd.org/departments/operations/capital-improvement-program/2021-citizens-oversight-committee-coc",
+    url="https://www.fwisd.org/departments/operations/capital-improvement-program/2021-citizens-oversight-committee-coc",  # noqa
 )
 spider = FortxFortWorthIsdCocSpider()
 
@@ -21,13 +21,17 @@ parsed_items = [item for item in spider.parse(test_response)]
 
 freezer.stop()
 
+
 def test_count():
     assert len(parsed_items) == 14
 
 
 def test_title():
     assert parsed_items[0]["title"] == "2021 Citizens Oversight Committee Meeting"
-    assert parsed_items[1]["title"] == "2021 Citizens Oversight Committee - Special Meeting"
+    assert (
+        parsed_items[1]["title"]
+        == "2021 Citizens Oversight Committee - Special Meeting"
+    )
     assert parsed_items[3]["title"] == "2021 COC"
     assert parsed_items[13]["title"] == "2021 COC"
 
@@ -42,12 +46,13 @@ def test_start():
     assert parsed_items[3]["start"] == datetime(2024, 9, 9, 0, 0)
     assert parsed_items[13]["start"] == datetime(2022, 6, 6, 0, 0)
 
+
 def test_end():
     assert parsed_items[0]["end"] == datetime(2024, 9, 9, 19, 0)
     assert parsed_items[1]["end"] == datetime(2024, 10, 21, 19, 0)
     assert parsed_items[2]["end"] == datetime(2024, 12, 2, 19, 0)
-    assert parsed_items[3]["end"] == None
-    assert parsed_items[13]["end"] == None
+    assert parsed_items[3]["end"] is None
+    assert parsed_items[13]["end"] is None
 
 
 def test_time_notes():
@@ -55,7 +60,10 @@ def test_time_notes():
 
 
 def test_id():
-    assert parsed_items[0]["id"] == "fortx_Fort_Worth_Isd_Coc/202409091800/x/2021_citizens_oversight_committee_meeting"
+    assert (
+        parsed_items[0]["id"]
+        == "fortx_Fort_Worth_Isd_Coc/202409091800/x/2021_citizens_oversight_committee_meeting"  # noqa
+    )
 
 
 def test_status():
@@ -69,16 +77,19 @@ def test_status():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "Fort Worth ISD District Service Center",
-        "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116"
+        "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116",
     }
     assert parsed_items[13]["location"] == {
         "name": "Fort Worth ISD District Service Center",
-        "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116"
+        "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116",
     }
 
 
 def test_source():
-    assert parsed_items[0]["source"] == "https://www.fwisd.org/departments/operations/capital-improvement-program/2021-citizens-oversight-committee-coc"
+    assert (
+        parsed_items[0]["source"]
+        == "https://www.fwisd.org/departments/operations/capital-improvement-program/2021-citizens-oversight-committee-coc"  # noqa
+    )
 
 
 def test_links():
@@ -86,26 +97,26 @@ def test_links():
     assert parsed_items[3]["links"] == [
         {
             "title": "Agenda",
-            "href": "https://drive.google.com/file/d/1Dqk3tdEhQYQ_LIbk30bT1weK2BIF3xu9/view?usp=drive_link"
+            "href": "https://drive.google.com/file/d/1Dqk3tdEhQYQ_LIbk30bT1weK2BIF3xu9/view?usp=drive_link",  # noqa
         },
         {
             "title": "Presentation",
-            "href": "https://drive.google.com/file/d/1T442XJTxHLXoLbDWki0hyFSqGjlcROrr/view?usp=drive_link"
+            "href": "https://drive.google.com/file/d/1T442XJTxHLXoLbDWki0hyFSqGjlcROrr/view?usp=drive_link",  # noqa
         },
     ]
     assert parsed_items[4]["links"] == [
         {
             "title": "Agenda",
-            "href": "https://drive.google.com/file/d/1H78SIPHk-qidCxUJAzBX_ubSZr4uPpgW/view?usp=drive_link"
+            "href": "https://drive.google.com/file/d/1H78SIPHk-qidCxUJAzBX_ubSZr4uPpgW/view?usp=drive_link",  # noqa
         },
         {
             "title": "Presentation",
-            "href": "https://drive.google.com/file/d/1Nl5RkLmOWloPPCYR6kuSMQrb8ml0Xjss/view?usp=drive_link"
+            "href": "https://drive.google.com/file/d/1Nl5RkLmOWloPPCYR6kuSMQrb8ml0Xjss/view?usp=drive_link",  # noqa
         },
         {
             "title": "Minutes",
-            "href": "https://drive.google.com/file/d/1gR7xUdtqPplwQo9fUSu3aNMCxG-L68F1/view?usp=drive_link"
-        }
+            "href": "https://drive.google.com/file/d/1gR7xUdtqPplwQo9fUSu3aNMCxG-L68F1/view?usp=drive_link",  # noqa
+        },
     ]
 
 
