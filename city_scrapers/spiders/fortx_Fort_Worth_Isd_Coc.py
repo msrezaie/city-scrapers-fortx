@@ -1,6 +1,7 @@
-from city_scrapers_core.constants import NOT_CLASSIFIED
+from city_scrapers_core.constants import COMMITTEE
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
+from dateutil.parser import parse
 
 
 class FortxFortWorthIsdCocSpider(CityScrapersSpider):
@@ -16,17 +17,25 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         Change the `_parse_title`, `_parse_start`, etc methods to fit your scraping
         needs.
         """
-        for item in response.css(".meetings"):
+
+        location = {
+            "name": "Fort Worth ISD District Service Center",
+            "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116"
+        }
+
+
+        # go over the new events
+        for item in response.css(".fsDayContainer"):
             meeting = Meeting(
-                title=self._parse_title(item),
+                title=self._parse_upcoming_title(item),
                 description=self._parse_description(item),
-                classification=self._parse_classification(item),
-                start=self._parse_start(item),
-                end=self._parse_end(item),
+                classification=COMMITTEE,
+                start=self._parse_upcoming_start(item),
+                end=self._parse_upcoming_end(item),
                 all_day=self._parse_all_day(item),
-                time_notes=self._parse_time_notes(item),
-                location=self._parse_location(item),
-                links=self._parse_links(item),
+                time_notes="",
+                location=location,
+                links=[],
                 source=self._parse_source(response),
             )
 
@@ -35,44 +44,77 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
 
             yield meeting
 
-    def _parse_title(self, item):
+        # go over the old events
+        # the first table has the old events
+        for item in response.css("table")[0].css("tr"):
+            meeting = Meeting(
+                title=self._parse_past_title(item),
+                description=self._parse_description(item),
+                classification=COMMITTEE,
+                start=self._parse_past_start(item),
+                end=None,
+                all_day=self._parse_all_day(item),
+                time_notes="",
+                location=location,
+                links=self._parse_past_links(item),
+                source=self._parse_source(response),
+            )
+
+            meeting["status"] = self._get_status(meeting)
+            meeting["id"] = self._get_id(meeting)
+
+            yield meeting
+
+    def _parse_upcoming_title(self, item):
         """Parse or generate meeting title."""
-        return ""
+        return item.css('.fsTitle a::text').get()
+
+    def _parse_past_title(self, item):
+        """Parse or generate meeting title."""
+        return "2021 COC"
 
     def _parse_description(self, item):
         """Parse or generate meeting description."""
         return ""
 
-    def _parse_classification(self, item):
-        """Parse or generate classification from allowed options."""
-        return NOT_CLASSIFIED
+    def _parse_upcoming_start(self, item):
+        """Parse upcoming start datetime as a naive datetime object."""
+        datetime = item.css('.fsStartTime::attr(datetime)').get()
+        date, time = datetime.split('T')
+        time = time.split('-')[0]
+        return parse(f"{date} {time}")
 
-    def _parse_start(self, item):
-        """Parse start datetime as a naive datetime object."""
-        return None
+    def _parse_past_start(self, item):
+        """Parse past start date as a naive datetime object."""
+        date = item.css('td::text').get()
+        return parse(date)
 
-    def _parse_end(self, item):
+    def _parse_upcoming_end(self, item):
         """Parse end datetime as a naive datetime object. Added by pipeline if None"""
-        return None
-
-    def _parse_time_notes(self, item):
-        """Parse any additional notes on the timing of the meeting"""
-        return ""
+        datetime = item.css('.fsEndTime::attr(datetime)').get()
+        date, time = datetime.split('T')
+        time = time.split('-')[0]
+        return parse(f"{date} {time}")
 
     def _parse_all_day(self, item):
         """Parse or generate all-day status. Defaults to False."""
         return False
 
-    def _parse_location(self, item):
-        """Parse or generate location."""
-        return {
-            "address": "",
-            "name": "",
-        }
-
-    def _parse_links(self, item):
+    def _parse_past_links(self, item):
         """Parse or generate links."""
-        return [{"href": "", "title": ""}]
+        links = []
+        cells = item.css('td')
+        agenda_link = cells[1].css('a::attr(href)').get()
+        presentation_link = cells[2].css('a::attr(href)').get()
+        minutes_link = cells[3].css('a::attr(href)').get()
+        if agenda_link:
+            links.append({"title": "Agenda", "href": agenda_link})
+        if presentation_link:
+            links.append({"title": "Presentation", "href": presentation_link})
+        if minutes_link:
+            links.append({"title": "Minutes", "href": minutes_link})
+
+        return links
 
     def _parse_source(self, response):
         """Parse or generate source."""
