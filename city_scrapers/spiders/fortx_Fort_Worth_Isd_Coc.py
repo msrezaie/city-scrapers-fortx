@@ -29,11 +29,11 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         for item in response.css(".fsDayContainer"):
             meeting = Meeting(
                 title=self._parse_upcoming_title(item),
-                description=self._parse_description(item),
+                description="",
                 classification=COMMITTEE,
                 start=self._parse_upcoming_start(item),
                 end=self._parse_upcoming_end(item),
-                all_day=self._parse_all_day(item),
+                all_day=False,
                 time_notes="",
                 location=location,
                 links=[],
@@ -49,12 +49,12 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         # the first table has the old events
         for item in response.css("table")[0].css("tr"):
             meeting = Meeting(
-                title=self._parse_past_title(item),
-                description=self._parse_description(item),
+                title="2021 COC",
+                description="",
                 classification=COMMITTEE,
                 start=self._parse_past_start(item),
                 end=None,
-                all_day=self._parse_all_day(item),
+                all_day=False,
                 time_notes="",
                 location=location,
                 links=self._parse_past_links(item),
@@ -70,17 +70,11 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         """Parse or generate meeting title."""
         return item.css(".fsTitle a::text").get()
 
-    def _parse_past_title(self, item):
-        """Parse or generate meeting title."""
-        return "2021 COC"
-
-    def _parse_description(self, item):
-        """Parse or generate meeting description."""
-        return ""
-
     def _parse_upcoming_start(self, item):
         """Parse upcoming start datetime as a naive datetime object."""
         datetime = item.css(".fsStartTime::attr(datetime)").get()
+        if not datetime:
+            return None
         date, time = datetime.split("T")
         time = time.split("-")[0]
         return parse(f"{date} {time}")
@@ -88,18 +82,18 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
     def _parse_past_start(self, item):
         """Parse past start date as a naive datetime object."""
         date = item.css("td::text").get()
+        if not date:
+            return None
         return parse(date)
 
     def _parse_upcoming_end(self, item):
         """Parse end datetime as a naive datetime object. Added by pipeline if None"""
         datetime = item.css(".fsEndTime::attr(datetime)").get()
+        if not datetime:
+            return None
         date, time = datetime.split("T")
         time = time.split("-")[0]
         return parse(f"{date} {time}")
-
-    def _parse_all_day(self, item):
-        """Parse or generate all-day status. Defaults to False."""
-        return False
 
     def _parse_past_links(self, item):
         """Parse or generate links."""
