@@ -6,7 +6,9 @@ from city_scrapers_core.constants import NOT_CLASSIFIED
 from city_scrapers_core.utils import file_response
 from freezegun import freeze_time
 
-from city_scrapers.spiders.fortx_Fort_Worth_Isd_Meetings import FortxFortWorthIsdMeetingsSpider
+from city_scrapers.spiders.fortx_Fort_Worth_Isd_Meetings import (
+    FortxFortWorthIsdMeetingsSpider,
+)
 
 test_response = file_response(
     join(dirname(__file__), "files", "fortx_Fort_Worth_Isd_Meetings.html"),
@@ -47,7 +49,10 @@ def test_time_notes():
 
 
 def test_id():
-    assert parsed_items[0]["id"] == "fortx_Fort_Worth_Isd_Meetings/202408271730/x/regular_board_meeting"
+    assert (
+        parsed_items[0]["id"]
+        == "fortx_Fort_Worth_Isd_Meetings/202408271730/x/regular_board_meeting"
+    )
 
 
 def test_status():
@@ -57,28 +62,25 @@ def test_status():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "Fort Worth ISD District Service Center",
-        "address": "7060 Camp Bowie Blvd., Fort Worth, TX 76116"
+        "address": "7060 Camp Bowie Blvd., Fort Worth, TX 76116",
     }
 
 
 def test_source():
-    assert parsed_items[0]["source"] == "https://meetings.boardbook.org/public/organization/733"
+    assert (
+        parsed_items[0]["source"]
+        == "https://meetings.boardbook.org/public/organization/733"
+    )
 
 
 def test_links():
     assert parsed_items[0]["links"] == [
         {
             "title": "Map Link",
-            "href": "https://maps.google.com/?q=7060+Camp+Bowie+Blvd.%2c+Fort+Worth%2c+TX+76116"
+            "href": "https://maps.google.com/?q=7060+Camp+Bowie+Blvd.%2c+Fort+Worth%2c+TX+76116",  # noqa
         },
-        {
-            "title": "Public Notice",
-            "href": "/Public/PublicNotice/733?meeting=646834"
-        },
-        {
-            "title": "Agenda",
-            "href": "/Public/Agenda/733?meeting=646834"
-        },
+        {"title": "Public Notice", "href": "/Public/PublicNotice/733?meeting=646834"},
+        {"title": "Agenda", "href": "/Public/Agenda/733?meeting=646834"},
     ]
 
 

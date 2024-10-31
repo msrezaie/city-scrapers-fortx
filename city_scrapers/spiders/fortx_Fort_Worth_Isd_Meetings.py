@@ -38,8 +38,8 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
 
     def _parse_title(self, item):
         """Parse or generate meeting title."""
-        str = item.css('td')[0].css('div::text').get()
-        title = str.split('-')[1].strip()
+        str = item.css("td")[0].css("div::text").get()
+        title = str.split("-")[1].strip()
         return title
 
     def _parse_description(self, item):
@@ -52,9 +52,9 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
 
     def _parse_start(self, item):
         """Parse start datetime as a naive datetime object."""
-        str = item.css('td')[0].css('div::text').get()
-        date, time = str.split('at')
-        time = time.split('-')[0]
+        str = item.css("td")[0].css("div::text").get()
+        date, time = str.split("at")
+        time = time.split("-")[0]
         return parse(f"{date} {time}")
 
     def _parse_end(self, item):
@@ -71,7 +71,7 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
 
     def _parse_location(self, item):
         """Parse or generate location."""
-        lines = item.css('td')[1].css('span::text')
+        lines = item.css("td")[1].css("span::text")
         name = lines[0].get()
         line1 = lines[1].get()
         line2 = lines[2].get()
@@ -84,13 +84,13 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
         """Parse or generate links."""
         # import pdb; pdb.set_trace()
         output = []
-        links = item.css('a')
+        links = item.css("a")
         for link in links:
-            title = link.css('::text').get()
-            if title == ' map it':
-                title = 'Map Link'
-            href = link.css('::attr(href)').get()
-            output.append({ "title": title, "href": href })
+            title = link.css("::text").get()
+            if title == " map it":
+                title = "Map Link"
+            href = link.css("::attr(href)").get()
+            output.append({"title": title, "href": href})
         return output
 
     def _parse_source(self, response):
