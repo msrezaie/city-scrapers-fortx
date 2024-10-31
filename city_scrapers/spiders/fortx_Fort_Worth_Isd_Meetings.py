@@ -12,20 +12,17 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
 
     def parse(self, response):
         """
-        `parse` should always `yield` Meeting items.
-
-        Change the `_parse_title`, `_parse_start`, etc methods to fit your scraping
-        needs.
+        Parse meetings from table.
         """
         for item in response.css("table tbody tr"):
             meeting = Meeting(
                 title=self._parse_title(item),
-                description=self._parse_description(item),
-                classification=self._parse_classification(item),
+                description="",
+                classification=NOT_CLASSIFIED,
                 start=self._parse_start(item),
-                end=self._parse_end(item),
-                all_day=self._parse_all_day(item),
-                time_notes=self._parse_time_notes(item),
+                end=None,
+                all_day=False,
+                time_notes="",
                 location=self._parse_location(item),
                 links=self._parse_links(item),
                 source=self._parse_source(response),
@@ -37,18 +34,10 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
             yield meeting
 
     def _parse_title(self, item):
-        """Parse or generate meeting title."""
+        """Parse meeting title."""
         str = item.css("td")[0].css("div::text").get()
         title = str.split("-")[1].strip()
         return title
-
-    def _parse_description(self, item):
-        """Parse or generate meeting description."""
-        return ""
-
-    def _parse_classification(self, item):
-        """Parse or generate classification from allowed options."""
-        return NOT_CLASSIFIED
 
     def _parse_start(self, item):
         """Parse start datetime as a naive datetime object."""
@@ -57,20 +46,8 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
         time = time.split("-")[0]
         return parse(f"{date} {time}")
 
-    def _parse_end(self, item):
-        """Parse end datetime as a naive datetime object. Added by pipeline if None"""
-        return None
-
-    def _parse_time_notes(self, item):
-        """Parse any additional notes on the timing of the meeting"""
-        return ""
-
-    def _parse_all_day(self, item):
-        """Parse or generate all-day status. Defaults to False."""
-        return False
-
     def _parse_location(self, item):
-        """Parse or generate location."""
+        """Parse location from 2nd field."""
         lines = item.css("td")[1].css("span::text")
         name = lines[0].get()
         line1 = lines[1].get()
@@ -81,8 +58,7 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
         }
 
     def _parse_links(self, item):
-        """Parse or generate links."""
-        # import pdb; pdb.set_trace()
+        """Parse links from table row."""
         output = []
         links = item.css("a")
         for link in links:
