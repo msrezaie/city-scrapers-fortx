@@ -20,17 +20,15 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
     especially since the CSS of the source webpages was quite messy.
     """
     start_urls = [
-        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived", # noqa
-        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readCurrentAndUpcoming", # noqa
+        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived",  # noqa
+        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readCurrentAndUpcoming",  # noqa
     ]
-    agenda_base_url = (
-        "https://prod-agendamanagement-publicportal.azurewebsites.us/HtmlAgenda/" # noqa
-    )
+    agenda_base_url = "https://prod-agendamanagement-publicportal.azurewebsites.us/HtmlAgenda/"  # noqa
     committee_id = "fe6aa5cc-7448-4194-ac6e-08dc95f79ccc"
 
     location = {
-        "address": "100 East Weatherford Street, 5th Floor, Fort Worth, Texas 76196", # noqa
-        "name": "Tarrant County Administration Building (check the agenda for room location)", # noqa
+        "address": "100 East Weatherford Street, 5th Floor, Fort Worth, Texas 76196",  # noqa
+        "name": "Tarrant County Administration Building (check the agenda for room location)",  # noqa
     }
 
     def start_requests(self):

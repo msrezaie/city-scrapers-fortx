@@ -12,7 +12,7 @@ from city_scrapers.spiders.fortx_Tarrant_County_Commissioners_Court import (
 
 test_response = file_response(
     join(dirname(__file__), "files", "fortx_Tarrant_County_Commissioners_Court.json"),
-    url="https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived", # noqa
+    url="https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived",  # noqa
 )
 spider = FortxTarrantCountyCommissionersCourtSpider()
 
@@ -61,7 +61,7 @@ def test_status():
 
 def test_location():
     assert parsed_items[0]["location"] == {
-        "name": "Tarrant County Administration Building (check the agenda for room location)", # noqa
+        "name": "Tarrant County Administration Building (check the agenda for room location)",  # noqa
         "address": "100 East Weatherford Street, 5th Floor, Fort Worth, Texas 76196",
     }
 
@@ -69,7 +69,7 @@ def test_location():
 def test_source():
     assert (
         parsed_items[0]["source"]
-        == "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived" # noqa
+        == "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived"  # noqa
     )
 
 
