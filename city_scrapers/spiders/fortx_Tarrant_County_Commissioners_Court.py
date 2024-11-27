@@ -1,4 +1,5 @@
 import json
+
 import scrapy
 from city_scrapers_core.constants import COMMISSION
 from city_scrapers_core.items import Meeting
