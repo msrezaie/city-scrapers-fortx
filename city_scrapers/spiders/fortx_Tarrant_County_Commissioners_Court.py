@@ -13,23 +13,24 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
     timezone = "America/Chicago"
 
     """
-    The scraper gathers meeting information from two separate endpoints specified in start_urls. One
-    endpoint provides archived meetings, and the other provides current and upcoming meetings. This
-    approach was chosen to keep the scraper simple and avoid overcomplicating it, especially since
-    the CSS of the source webpages was quite messy.
+    The scraper gathers meeting information from two separate endpoints
+    specified in start_urls. One endpoint provides archived meetings,
+    and the other provides current and upcoming meetings. This approach
+    was chosen to keep the scraper simple and avoid overcomplicating it,
+    especially since the CSS of the source webpages was quite messy.
     """
     start_urls = [
-        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived",
-        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readCurrentAndUpcoming",
+        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived", # noqa
+        "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readCurrentAndUpcoming", # noqa
     ]
     agenda_base_url = (
-        "https://prod-agendamanagement-publicportal.azurewebsites.us/HtmlAgenda/"
+        "https://prod-agendamanagement-publicportal.azurewebsites.us/HtmlAgenda/" # noqa
     )
     committee_id = "fe6aa5cc-7448-4194-ac6e-08dc95f79ccc"
 
     location = {
-        "address": "100 East Weatherford Street, 5th Floor, Fort Worth, Texas 76196",
-        "name": "Tarrant County Administration Building (check the agenda for room location)",
+        "address": "100 East Weatherford Street, 5th Floor, Fort Worth, Texas 76196", # noqa
+        "name": "Tarrant County Administration Building (check the agenda for room location)", # noqa
     }
 
     def start_requests(self):
