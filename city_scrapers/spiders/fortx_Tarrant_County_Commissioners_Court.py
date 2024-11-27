@@ -26,6 +26,8 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
     agenda_base_url = "https://prod-agendamanagement-publicportal.azurewebsites.us/HtmlAgenda/"  # noqa
     committee_id = "fe6aa5cc-7448-4194-ac6e-08dc95f79ccc"
 
+    source_url = "https://www.tarrantcountytx.gov/en/commissioners-court/commissioners-court-agenda-videos.html"  # noqa
+
     location = {
         "address": "100 East Weatherford Street, 5th Floor, Fort Worth, Texas 76196",  # noqa
         "name": "Tarrant County Administration Building (check the agenda for room location)",  # noqa
@@ -46,8 +48,6 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
         data = json.loads(response.text)
         meetings = data.get("data", [])
         for item in meetings:
-            if item.get("meetingType") != "Commissioners Court":
-                continue
             meeting = Meeting(
                 title=item.get("description", "Commissioners Court"),
                 description="",
@@ -58,7 +58,7 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
                 time_notes="",
                 location=self.location,
                 links=self._parse_links(item),
-                source=response.url,
+                source=self.source_url,
             )
 
             meeting["status"] = self._get_status(meeting)
