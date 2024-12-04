@@ -25,7 +25,7 @@ freezer.stop()
 
 
 def test_count():
-    assert len(parsed_items) == 7
+    assert len(parsed_items) == 10
 
 
 def test_title():
@@ -69,7 +69,7 @@ def test_location():
 def test_source():
     assert (
         parsed_items[0]["source"]
-        == "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived"  # noqa
+        == "https://www.tarrantcountytx.gov/en/commissioners-court/commissioners-court-agenda-videos.html"  # noqa
     )
 
 
