@@ -10,22 +10,37 @@ from city_scrapers.spiders.fortx_Tarrant_County_Commissioners_Court import (
     FortxTarrantCountyCommissionersCourtSpider,
 )
 
-test_response = file_response(
-    join(dirname(__file__), "files", "fortx_Tarrant_County_Commissioners_Court.json"),
+archived_meetings = file_response(
+    join(
+        dirname(__file__),
+        "files",
+        "fortx_Tarrant_County_Commissioners_Court_archived_meetings.json",
+    ),
     url="https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readArchived",  # noqa
+)
+
+upcoming_meetings = file_response(
+    join(
+        dirname(__file__),
+        "files",
+        "fortx_Tarrant_County_Commissioners_Court_upcoming_meetings.json",
+    ),
+    url="https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetings/readCurrentAndUpcoming",  # noqa
 )
 spider = FortxTarrantCountyCommissionersCourtSpider()
 
 freezer = freeze_time("2024-11-25")
 freezer.start()
 
-parsed_items = [item for item in spider.parse(test_response)]
+archived_items = [item for item in spider.parse(archived_meetings)]
+upcoming_items = [item for item in spider.parse(upcoming_meetings)]
 
+parsed_items = archived_items + upcoming_items
 freezer.stop()
 
 
 def test_count():
-    assert len(parsed_items) == 10
+    assert len(parsed_items) == 11
 
 
 def test_title():
@@ -77,8 +92,12 @@ def test_links():
     assert parsed_items[0]["links"] == [
         {
             "title": "Agenda",
-            "href": "https://prod-agendamanagement-publicportal.azurewebsites.us/HtmlAgenda/94a0118f-4bf9-4be3-c33a-08dcfdc9934d",  # noqa
-        }
+            "href": "https://tarrant-agendamanagement-public.techsharetx.gov/publicportal/api/meetingattachments/download?id=7f339758-fa4b-4ec7-0189-08dcfda5b8b4",  # noqa
+        },
+        {
+            "title": "Video",
+            "href": "https://www.youtube.com/watch?v=BSjaTEIkv1s",
+        },
     ]
 
 

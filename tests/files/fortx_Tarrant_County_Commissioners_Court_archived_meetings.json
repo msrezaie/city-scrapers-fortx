@@ -7,28 +7,13 @@
             "meetingEndDateTime": "2024-12-03T17:00:00",
             "meetingType": "Commissioners Court",
             "description": "Commissioners Court",
-            "meetingStatus": "Upcoming",
-            "isPublished": false,
+            "meetingStatus": "Finalized",
+            "isPublished": true,
             "agendaAttachmentId": "7f339758-fa4b-4ec7-0189-08dcfda5b8b4",
             "minutesAttachmentId": null,
             "hasAgenda": true,
             "hasMinutes": false,
-            "videoId": null
-        },
-        {
-            "id": "4774d90d-9af6-427c-c33c-08dcfdc9934d",
-            "meetingStartDateTime": "2024-12-17T10:00:00",
-            "meetingStartDateTimeDisplay": "12/17/2024",
-            "meetingEndDateTime": "2024-12-17T17:00:00",
-            "meetingType": "Commissioners Court",
-            "description": "Commissioners Court",
-            "meetingStatus": "Upcoming",
-            "isPublished": false,
-            "agendaAttachmentId": null,
-            "minutesAttachmentId": null,
-            "hasAgenda": false,
-            "hasMinutes": false,
-            "videoId": null
+            "videoId": "BSjaTEIkv1s"
         },
         {
             "id": "cd10d7bb-bb62-4cf4-7576-08dcec96470c",
@@ -40,9 +25,9 @@
             "meetingStatus": "Finalized",
             "isPublished": true,
             "agendaAttachmentId": "f1a9a165-34c7-45ab-016e-08dcfda5b8b4",
-            "minutesAttachmentId": null,
+            "minutesAttachmentId": "1d895dfa-f62b-4e85-da6c-08dd0e2f659d",
             "hasAgenda": true,
-            "hasMinutes": false,
+            "hasMinutes": true,
             "videoId": "SN7XJUvODQY"
         },
         {
@@ -151,7 +136,7 @@
             "videoId": "TJy87Yn-2dM"
         }
     ],
-    "total": 10,
+    "total": 9,
     "aggregateResults": null,
     "errors": null
 }
