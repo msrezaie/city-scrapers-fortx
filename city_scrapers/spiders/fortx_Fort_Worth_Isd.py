@@ -12,10 +12,8 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
 
     def parse(self, response):
         """
-        `parse` should always `yield` Meeting items.
-
-        Change the `_parse_title`, `_parse_start`, etc methods to fit your scraping
-        needs.
+        The website shows a literal calendar on the page.
+        Scrape the calendar to create meeting objects.
         """
 
         # loop thru all dates that have events on them
@@ -40,23 +38,25 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
 
     def _strip_timezone(self, string):
         """Helper method to strip timezone information."""
-        return "-".join(string.split("-")[:-1])
+        if not string:
+            return None
+        # parse datetime string to datetime object with tzinfo
+        dt_with_tz = parse(string)
+        # replace the tzinfo with None
+        dt_naive = dt_with_tz.replace(tzinfo=None)
+        return dt_naive
 
     def _parse_start(self, day):
         """Parse start datetime as a naive datetime object."""
         with_tz = day.css(".fsStartTime::attr(datetime)").get()
-        if not with_tz:
-            return None
         no_tz = self._strip_timezone(with_tz)
-        return parse(no_tz)
+        return no_tz
 
     def _parse_end(self, day):
         """Parse end datetime as a naive datetime object."""
         with_tz = day.css(".fsEndTime::attr(datetime)").get()
-        if not with_tz:
-            return None
         no_tz = self._strip_timezone(with_tz)
-        return parse(no_tz)
+        return no_tz
 
     def _parse_location(self, day):
         """Parse or generate location."""
