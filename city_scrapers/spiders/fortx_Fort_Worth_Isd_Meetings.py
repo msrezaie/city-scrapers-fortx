@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 from city_scrapers_core.constants import NOT_CLASSIFIED
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
@@ -59,6 +61,7 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
 
     def _parse_links(self, item):
         """Parse links from table row."""
+        base_url = "https://meetings.boardbook.org/"
         output = []
         links = item.css("a")
         for link in links:
@@ -66,6 +69,9 @@ class FortxFortWorthIsdMeetingsSpider(CityScrapersSpider):
             if title == " map it":
                 title = "Map Link"
             href = link.css("::attr(href)").get()
+            # prepend base URL if necessary
+            # enables usability on other websites
+            href = urljoin(base_url, href)
             output.append({"title": title, "href": href})
         return output
 

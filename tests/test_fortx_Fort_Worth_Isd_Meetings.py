@@ -79,8 +79,14 @@ def test_links():
             "title": "Map Link",
             "href": "https://maps.google.com/?q=7060+Camp+Bowie+Blvd.%2c+Fort+Worth%2c+TX+76116",  # noqa
         },
-        {"title": "Public Notice", "href": "/Public/PublicNotice/733?meeting=646834"},
-        {"title": "Agenda", "href": "/Public/Agenda/733?meeting=646834"},
+        {
+            "title": "Public Notice",
+            "href": "https://meetings.boardbook.org/Public/PublicNotice/733?meeting=646834",  # noqa
+        },
+        {
+            "title": "Agenda",
+            "href": "https://meetings.boardbook.org/Public/Agenda/733?meeting=646834",
+        },
     ]
 
 
