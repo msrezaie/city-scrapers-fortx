@@ -70,30 +70,28 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         """Parse or generate meeting title."""
         return item.css(".fsTitle a::text").get()
 
+    def _strip_timezone(self, string):
+        """Helper method to strip timezone information."""
+        if not string:
+            return None
+        dt_with_tz = parse(string)
+        dt_naive = dt_with_tz.replace(tzinfo=None)
+        return dt_naive
+
     def _parse_upcoming_start(self, item):
         """Parse upcoming start datetime as a naive datetime object."""
         datetime = item.css(".fsStartTime::attr(datetime)").get()
-        if not datetime:
-            return None
-        date, time = datetime.split("T")
-        time = time.split("-")[0]
-        return parse(f"{date} {time}")
+        return self._strip_timezone(datetime)
 
     def _parse_past_start(self, item):
         """Parse past start date as a naive datetime object."""
         date = item.css("td::text").get()
-        if not date:
-            return None
         return parse(date)
 
     def _parse_upcoming_end(self, item):
         """Parse end datetime as a naive datetime object. Added by pipeline if None"""
         datetime = item.css(".fsEndTime::attr(datetime)").get()
-        if not datetime:
-            return None
-        date, time = datetime.split("T")
-        time = time.split("-")[0]
-        return parse(f"{date} {time}")
+        return self._strip_timezone(datetime)
 
     def _parse_past_links(self, item):
         """Parse or generate links."""
