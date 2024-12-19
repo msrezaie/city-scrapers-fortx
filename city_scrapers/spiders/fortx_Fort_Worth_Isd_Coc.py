@@ -97,15 +97,14 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         """Parse or generate links."""
         links = []
         cells = item.css("td")
-        agenda_link = cells[1].css("a::attr(href)").get()
-        presentation_link = cells[2].css("a::attr(href)").get()
-        minutes_link = cells[3].css("a::attr(href)").get()
-        if agenda_link:
-            links.append({"title": "Agenda", "href": agenda_link})
-        if presentation_link:
-            links.append({"title": "Presentation", "href": presentation_link})
-        if minutes_link:
-            links.append({"title": "Minutes", "href": minutes_link})
+        # loop thru each cell
+        for cell in cells:
+            # check if there is a link present
+            if cell.css("a"):
+                # if so, add link to links array
+                title = cell.css("a::text").get()
+                href = cell.css("a::attr(href)").get()
+                links.append({"title": title, "href": href})
 
         return links
 
