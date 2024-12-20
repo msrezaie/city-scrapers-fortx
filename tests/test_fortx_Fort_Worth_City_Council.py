@@ -25,7 +25,7 @@ meetings_detail = file_response(
     url=(
         "https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId=8a8add9a-3fd0-4b39-9a3e-d58e98e27acc"  # noqa
         "&contentId=07d0abc1-462c-4b0a-94b9-d1e7aee72eec&language=en-US&currentDateTime=09/01/2024%2012:00:00%20PM"  # noqa
-        "&mainContentId=07d0abc1-462c-4b0a-94b9-d1e7aee72eec",
+        "&mainContentId=07d0abc1-462c-4b0a-94b9-d1e7aee72eec"
     ),
 )
 
