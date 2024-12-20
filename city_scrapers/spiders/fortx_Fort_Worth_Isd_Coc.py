@@ -74,8 +74,7 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         """Helper method to strip timezone information."""
         if not string:
             return None
-        dt_with_tz = parse(string)
-        dt_naive = dt_with_tz.replace(tzinfo=None)
+        dt_naive = parse(string, ignoretz=True)
         return dt_naive
 
     def _parse_upcoming_start(self, item):
