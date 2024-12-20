@@ -40,10 +40,8 @@ class FortxFortWorthIsdSpider(CityScrapersSpider):
         """Helper method to strip timezone information."""
         if not string:
             return None
-        # parse datetime string to datetime object with tzinfo
-        dt_with_tz = parse(string)
-        # replace the tzinfo with None
-        dt_naive = dt_with_tz.replace(tzinfo=None)
+        # parse datetime string to datetime but ignore timezone
+        dt_naive = parse(string, ignoretz=True)
         return dt_naive
 
     def _parse_start(self, day):
