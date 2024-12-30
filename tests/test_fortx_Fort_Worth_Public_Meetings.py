@@ -102,15 +102,13 @@ def test_status():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "Highland Hills Community Center",
-        "address": "Highland Hills Community Center, 1600 Glasgow Road, Fort Worth, 76134",  # noqa
+        "address": "1600 Glasgow Road, Fort Worth, 76134",
     }
 
 
 def test_source():
     assert parsed_items[0]["source"] == (
-        "https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId=8efac0b6-9ea3-402e-b7d9-e9e71a2a34a0"  # noqa
-        "&contentId=9c1c703d-0beb-46b1-9776-4bd79b26cefc&language=en-US&currentDateTime=01/02/2024%2006:00:00%20PM"  # noqa
-        "&mainContentId=00000000-0000-0000-0000-000000000000"
+        "https://www.fortworthtexas.gov/departments/cip/events/glasgow-oak-grove-meeting-tpw"  # noqa
     )
 
 

@@ -97,13 +97,18 @@ class FortxFortWorthPublicMeetingsSpider(CityScrapersSpider):
             time_notes="Please check the meeting description for details on the start time",  # noqa
             location=self._parse_location(meeting_data),
             links=[],
-            source=response.url,
+            source=meeting_data.get("Link", response.url),
         )
 
-        meeting["status"] = self._get_status(meeting)
+        meeting["status"] = self._parse_status(meeting, meeting_data)
         meeting["id"] = self._get_id(meeting)
 
         yield meeting
+
+    def _parse_status(self, meeting, item):
+        if item["IsCancelled"]:
+            return "cancelled"
+        return self._get_status(meeting)
 
     def _parse_description(self, item):
         description = item["Description"]
@@ -111,8 +116,16 @@ class FortxFortWorthPublicMeetingsSpider(CityScrapersSpider):
         return description
 
     def _parse_location(self, item):
-        """Meetings which are cancelled do not return the full address"""
-        address = item["Address"]
-        if item["IsCancelled"]:
-            return {"name": address["Suburb"], "address": address["Formatted"].strip()}
-        return {"name": address["Venue"], "address": address["Formatted"].strip()}
+        """
+        Some meeting items' Address fields are returned empty.
+        In such cases, the meeting is held via WebEx.
+        """
+        location = item["Address"]
+        name = location.get("Venue") or location.get("Suburb")
+        address = location.get("Formatted").split(", ")
+        address.pop(0) if len(address) > 1 else None
+        address = ", ".join(address)
+
+        if not name and not address:
+            return {"name": "WebEx", "address": "WebEx"}
+        return {"name": name, "address": address}
