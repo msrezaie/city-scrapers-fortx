@@ -6,6 +6,7 @@ from city_scrapers_core.constants import CITY_COUNCIL
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
 from dateutil.parser import parse as dateparse
+from dateutil.relativedelta import relativedelta
 
 
 class FortxFortWorthPublicMeetingsSpider(CityScrapersSpider):
@@ -39,24 +40,22 @@ class FortxFortWorthPublicMeetingsSpider(CityScrapersSpider):
         fetched from two of its API endpoints. The
         main API endpoint allows fetching meeting
         items for the entirety of one year. The
-        spider is set to fetch all meetings for the
-        current year.
+        spider is set to fetch all meetings 6 months
+        in the past and 6 months in the future.
         """
-        current_date = datetime.now().date()
+        current_date = datetime.now()
+        payloads = self.construct_payloads(current_date)
 
-        start_of_year = datetime(current_date.year, 1, 1).date()
-        end_of_year = datetime(current_date.year, 12, 31).date()
-
-        self.meetings_url_payload["StartDate"] = str(start_of_year)
-        self.meetings_url_payload["EndDate"] = str(end_of_year)
-
-        yield scrapy.Request(
-            url=self.meetings_url,
-            method="POST",
-            body=json.dumps(self.meetings_url_payload),
-            headers={"Content-Type": "application/json"},
-            callback=self.parse,
-        )
+        for payload in payloads:
+            if payload["StartDate"] == payload["EndDate"]:
+                continue
+            yield scrapy.Request(
+                url=self.meetings_url,
+                method="POST",
+                body=json.dumps(payload),
+                headers={"Content-Type": "application/json"},
+                callback=self.parse,
+            )
 
     def parse(self, response):
         data = response.json()
@@ -129,3 +128,49 @@ class FortxFortWorthPublicMeetingsSpider(CityScrapersSpider):
         if not name and not address:
             return {"name": "WebEx", "address": "WebEx"}
         return {"name": name, "address": address}
+
+    def construct_payloads(self, current_date):
+        """
+        The start and end dates parameters for this organization main
+        API endpoint requires the dates to be within the same year.
+        This means it can't be used to fetch meetings spanning months
+        from different years. This method constructs start and end date
+        ranges from the current date to 6 months in the past and 6 months
+        in the future.
+        """
+        past = current_date - relativedelta(months=6)
+        future = current_date + relativedelta(months=6)
+
+        payloads = []
+
+        if past.year != current_date.year:
+            first_payload = self.meetings_url_payload.copy()
+            first_payload["StartDate"] = str(past.date())
+            first_payload["EndDate"] = str(datetime(past.year, 12, 31).date())
+            second_payload = self.meetings_url_payload.copy()
+            second_payload["StartDate"] = str(datetime(current_date.year, 1, 1).date())
+            second_payload["EndDate"] = str(current_date.date())
+            payloads.append(first_payload)
+            payloads.append(second_payload)
+        else:
+            new_payload = self.meetings_url_payload.copy()
+            new_payload["StartDate"] = str(past.date())
+            new_payload["EndDate"] = str(current_date.date())
+            payloads.append(new_payload)
+
+        if future.year != current_date.year:
+            first_payload = self.meetings_url_payload.copy()
+            first_payload["StartDate"] = str(current_date.date())
+            first_payload["EndDate"] = str(datetime(current_date.year, 12, 31).date())
+            second_payload = self.meetings_url_payload.copy()
+            second_payload["StartDate"] = str(datetime(future.year, 1, 1).date())
+            second_payload["EndDate"] = str(future.date())
+            payloads.append(second_payload)
+            payloads.append(first_payload)
+        else:
+            new_payload = self.meetings_url_payload.copy()
+            new_payload["StartDate"] = str(current_date.date())
+            new_payload["EndDate"] = str(future.date())
+            payloads.append(new_payload)
+
+        return payloads
