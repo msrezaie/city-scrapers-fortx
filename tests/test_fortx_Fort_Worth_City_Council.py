@@ -93,15 +93,14 @@ def test_status():
 def test_location():
     assert parsed_items[0]["location"] == {
         "name": "Old City Hall",
-        "address": "Old City Hall, 200 Texas St., Fort Worth, 76102",
+        "address": "200 Texas St., Fort Worth, 76102",
     }
 
 
 def test_source():
     assert parsed_items[0]["source"] == (
-        "https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId=8a8add9a-3fd0-4b39-9a3e-d58e98e27acc"  # noqa
-        "&contentId=07d0abc1-462c-4b0a-94b9-d1e7aee72eec&language=en-US&currentDateTime=09/01/2024%2012:00:00%20PM"  # noqa
-        "&mainContentId=07d0abc1-462c-4b0a-94b9-d1e7aee72eec"
+        "https://www.fortworthtexas.gov/departments/citysecretary/"
+        "events/2024-city-council-executive-session-meetings"
     )
 
 
