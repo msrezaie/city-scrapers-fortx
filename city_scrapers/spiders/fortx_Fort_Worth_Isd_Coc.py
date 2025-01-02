@@ -14,10 +14,10 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
 
     def parse(self, response):
         """
-        `parse` should always `yield` Meeting items.
-
-        Change the `_parse_title`, `_parse_start`, etc methods to fit your scraping
-        needs.
+        Parse 2021 Citizens' Oversight Committee page.
+        There is a Calendar section with upcoming meetings.
+        There is also a Meeting Documents section with a table of past meetings.
+        Scrape both.
         """
 
         location = {
@@ -49,7 +49,7 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         # the first table has the old events
         for item in response.css("table")[0].css("tr"):
             meeting = Meeting(
-                title="2021 COC",
+                title="2021 Citizens' Oversight Committee Meeting",
                 description="",
                 classification=COMMITTEE,
                 start=self._parse_past_start(item),
@@ -83,9 +83,12 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
         return self._strip_timezone(datetime)
 
     def _parse_past_start(self, item):
-        """Parse past start date as a naive datetime object."""
+        """
+        Parse past start date as a naive datetime object.
+        All meeting appear to happen at 6PM. 6PM is the default.
+        """
         date = item.css("td::text").get()
-        return parse(date)
+        return parse(f"{date} 6:00PM")
 
     def _parse_upcoming_end(self, item):
         """Parse end datetime as a naive datetime object. Added by pipeline if None"""

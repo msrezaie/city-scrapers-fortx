@@ -32,8 +32,8 @@ def test_title():
         parsed_items[1]["title"]
         == "2021 Citizens Oversight Committee - Special Meeting"
     )
-    assert parsed_items[3]["title"] == "2021 COC"
-    assert parsed_items[13]["title"] == "2021 COC"
+    assert parsed_items[3]["title"] == "2021 Citizens' Oversight Committee Meeting"
+    assert parsed_items[13]["title"] == "2021 Citizens' Oversight Committee Meeting"
 
 
 def test_description():
@@ -43,8 +43,8 @@ def test_description():
 def test_start():
     assert parsed_items[0]["start"] == datetime(2024, 9, 9, 18, 0)
     assert parsed_items[2]["start"] == datetime(2024, 12, 2, 18, 0)
-    assert parsed_items[3]["start"] == datetime(2024, 9, 9, 0, 0)
-    assert parsed_items[13]["start"] == datetime(2022, 6, 6, 0, 0)
+    assert parsed_items[3]["start"] == datetime(2024, 9, 9, 18, 0)
+    assert parsed_items[13]["start"] == datetime(2022, 6, 6, 18, 0)
 
 
 def test_end():
