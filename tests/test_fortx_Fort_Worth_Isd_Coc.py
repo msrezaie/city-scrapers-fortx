@@ -23,17 +23,19 @@ freezer.stop()
 
 
 def test_count():
-    assert len(parsed_items) == 14
+    assert len(parsed_items) == 13
 
 
 def test_title():
-    assert parsed_items[0]["title"] == "2021 Citizens Oversight Committee Meeting"
+    # past meetings
+    assert parsed_items[0]["title"] == "2021 Citizens' Oversight Committee Meeting"
+    assert parsed_items[10]["title"] == "2021 Citizens' Oversight Committee Meeting"
+    # upcoming meetings
     assert (
-        parsed_items[1]["title"]
-        == "2021 Citizens Oversight Committee - Special Meeting"
+        parsed_items[11]["title"] == "2021 Citizens Oversight Committee - "
+        "Special Meeting"
     )
-    assert parsed_items[3]["title"] == "2021 Citizens' Oversight Committee Meeting"
-    assert parsed_items[13]["title"] == "2021 Citizens' Oversight Committee Meeting"
+    assert parsed_items[12]["title"] == "2021 Citizens Oversight Committee Meeting"
 
 
 def test_description():
@@ -41,18 +43,21 @@ def test_description():
 
 
 def test_start():
+    # past meetings
     assert parsed_items[0]["start"] == datetime(2024, 9, 9, 18, 0)
-    assert parsed_items[2]["start"] == datetime(2024, 12, 2, 18, 0)
-    assert parsed_items[3]["start"] == datetime(2024, 9, 9, 18, 0)
-    assert parsed_items[13]["start"] == datetime(2022, 6, 6, 18, 0)
+    assert parsed_items[10]["start"] == datetime(2022, 6, 6, 18, 0)
+    # upcoming meetings
+    assert parsed_items[11]["start"] == datetime(2024, 10, 21, 18, 0)
+    assert parsed_items[12]["start"] == datetime(2024, 12, 2, 18, 0)
 
 
 def test_end():
-    assert parsed_items[0]["end"] == datetime(2024, 9, 9, 19, 0)
-    assert parsed_items[1]["end"] == datetime(2024, 10, 21, 19, 0)
-    assert parsed_items[2]["end"] == datetime(2024, 12, 2, 19, 0)
-    assert parsed_items[3]["end"] is None
-    assert parsed_items[13]["end"] is None
+    # past meetings
+    assert parsed_items[0]["end"] is None
+    assert parsed_items[10]["end"] is None
+    # upcoming meetings
+    assert parsed_items[11]["end"] == datetime(2024, 10, 21, 19, 0)
+    assert parsed_items[12]["end"] == datetime(2024, 12, 2, 19, 0)
 
 
 def test_time_notes():
@@ -67,11 +72,12 @@ def test_id():
 
 
 def test_status():
+    # past meetings
     assert parsed_items[0]["status"] == "passed"
-    assert parsed_items[1]["status"] == "tentative"
-    assert parsed_items[2]["status"] == "tentative"
-    assert parsed_items[3]["status"] == "passed"
-    assert parsed_items[13]["status"] == "passed"
+    assert parsed_items[10]["status"] == "passed"
+    # upcoming meetings
+    assert parsed_items[11]["status"] == "tentative"
+    assert parsed_items[12]["status"] == "tentative"
 
 
 def test_location():
@@ -79,7 +85,7 @@ def test_location():
         "name": "Fort Worth ISD District Service Center",
         "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116",
     }
-    assert parsed_items[13]["location"] == {
+    assert parsed_items[12]["location"] == {
         "name": "Fort Worth ISD District Service Center",
         "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116",
     }
@@ -93,8 +99,8 @@ def test_source():
 
 
 def test_links():
-    assert parsed_items[0]["links"] == []
-    assert parsed_items[3]["links"] == [
+    # past meetings
+    assert parsed_items[0]["links"] == [
         {
             "title": "Agenda",
             "href": "https://drive.google.com/file/d/1Dqk3tdEhQYQ_LIbk30bT1weK2BIF3xu9/view?usp=drive_link",  # noqa
@@ -104,7 +110,7 @@ def test_links():
             "href": "https://drive.google.com/file/d/1T442XJTxHLXoLbDWki0hyFSqGjlcROrr/view?usp=drive_link",  # noqa
         },
     ]
-    assert parsed_items[4]["links"] == [
+    assert parsed_items[1]["links"] == [
         {
             "title": "Agenda",
             "href": "https://drive.google.com/file/d/1H78SIPHk-qidCxUJAzBX_ubSZr4uPpgW/view?usp=drive_link",  # noqa
@@ -118,6 +124,9 @@ def test_links():
             "href": "https://drive.google.com/file/d/1gR7xUdtqPplwQo9fUSu3aNMCxG-L68F1/view?usp=drive_link",  # noqa
         },
     ]
+    # upcoming meetings
+    assert parsed_items[11]["links"] == []
+    assert parsed_items[12]["links"] == []
 
 
 def test_classification():

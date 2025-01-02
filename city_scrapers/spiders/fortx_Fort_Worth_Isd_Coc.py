@@ -25,34 +25,20 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
             "address": "7060 Camp Bowie Blvd, Fort Worth, TX 76116",
         }
 
-        # go over the new events
-        for item in response.css(".fsDayContainer"):
-            meeting = Meeting(
-                title=self._parse_upcoming_title(item),
-                description="",
-                classification=COMMITTEE,
-                start=self._parse_upcoming_start(item),
-                end=self._parse_upcoming_end(item),
-                all_day=False,
-                time_notes="",
-                location=location,
-                links=[],
-                source=self._parse_source(response),
-            )
+        # keep track of scraped dates to prevent duplicates
+        scraped_dates = set()
 
-            meeting["status"] = self._get_status(meeting)
-            meeting["id"] = self._get_id(meeting)
-
-            yield meeting
-
-        # go over the old events
         # the first table has the old events
+        # if there are duplicates on the page, we are potentially missing data
+        # scrape data from table first bc it has more data (links) than next section
         for item in response.css("table")[0].css("tr"):
+            start = self._parse_past_start(item)
+            scraped_dates.add(start.date())
             meeting = Meeting(
                 title="2021 Citizens' Oversight Committee Meeting",
                 description="",
                 classification=COMMITTEE,
-                start=self._parse_past_start(item),
+                start=start,
                 end=None,
                 all_day=False,
                 time_notes="",
@@ -65,6 +51,28 @@ class FortxFortWorthIsdCocSpider(CityScrapersSpider):
             meeting["id"] = self._get_id(meeting)
 
             yield meeting
+
+        # go over the new events
+        for item in response.css(".fsDayContainer"):
+            start = self._parse_upcoming_start(item)
+            if start and start.date() not in scraped_dates:
+                meeting = Meeting(
+                    title=self._parse_upcoming_title(item),
+                    description="",
+                    classification=COMMITTEE,
+                    start=start,
+                    end=self._parse_upcoming_end(item),
+                    all_day=False,
+                    time_notes="",
+                    location=location,
+                    links=[],
+                    source=self._parse_source(response),
+                )
+
+                meeting["status"] = self._get_status(meeting)
+                meeting["id"] = self._get_id(meeting)
+
+                yield meeting
 
     def _parse_upcoming_title(self, item):
         """Parse or generate meeting title."""
