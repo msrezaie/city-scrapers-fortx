@@ -175,34 +175,13 @@ class FortxFortWorthCityCouncilSpider(CityScrapersSpider):
 
         payloads = []
 
-        if past.year != current_date.year:
-            first_payload = self.meetings_url_payload.copy()
-            first_payload["StartDate"] = str(past.date())
-            first_payload["EndDate"] = str(datetime(past.year, 12, 31).date())
-            second_payload = self.meetings_url_payload.copy()
-            second_payload["StartDate"] = str(datetime(current_date.year, 1, 1).date())
-            second_payload["EndDate"] = str(current_date.date())
-            payloads.append(first_payload)
-            payloads.append(second_payload)
-        else:
-            new_payload = self.meetings_url_payload.copy()
-            new_payload["StartDate"] = str(past.date())
-            new_payload["EndDate"] = str(current_date.date())
-            payloads.append(new_payload)
-
-        if future.year != current_date.year:
-            first_payload = self.meetings_url_payload.copy()
-            first_payload["StartDate"] = str(current_date.date())
-            first_payload["EndDate"] = str(datetime(current_date.year, 12, 31).date())
-            second_payload = self.meetings_url_payload.copy()
-            second_payload["StartDate"] = str(datetime(future.year, 1, 1).date())
-            second_payload["EndDate"] = str(future.date())
-            payloads.append(second_payload)
-            payloads.append(first_payload)
-        else:
-            new_payload = self.meetings_url_payload.copy()
-            new_payload["StartDate"] = str(current_date.date())
-            new_payload["EndDate"] = str(future.date())
-            payloads.append(new_payload)
+        first_payload = self.meetings_url_payload.copy()
+        first_payload["StartDate"] = str(past)
+        first_payload["EndDate"] = str(past.replace(month=12, day=31))
+        second_payload = self.meetings_url_payload.copy()
+        second_payload["StartDate"] = str(future.replace(month=1, day=1))
+        second_payload["EndDate"] = str(future)
+        payloads.append(first_payload)
+        payloads.append(second_payload)
 
         return payloads
