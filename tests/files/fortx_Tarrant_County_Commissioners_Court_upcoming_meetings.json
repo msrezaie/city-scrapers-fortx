@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "id": "4774d90d-9af6-427c-c33c-08dcfdc9934d",
+            "meetingStartDateTime": "2024-12-17T10:00:00",
+            "meetingStartDateTimeDisplay": "12/17/2024",
+            "meetingEndDateTime": "2024-12-17T17:00:00",
+            "meetingType": "Commissioners Court",
+            "description": "Commissioners Court",
+            "meetingStatus": "Upcoming",
+            "isPublished": false,
+            "agendaAttachmentId": "2384129d-a6b3-460c-da6f-08dd0e2f659d",
+            "minutesAttachmentId": null,
+            "hasAgenda": true,
+            "hasMinutes": false,
+            "videoId": null
+        },
+        {
+            "id": "676e2944-0b63-463c-a43f-08dd149af481",
+            "meetingStartDateTime": "2025-01-14T10:00:00",
+            "meetingStartDateTimeDisplay": "1/14/2025",
+            "meetingEndDateTime": "2025-01-14T17:00:00",
+            "meetingType": "Commissioners Court",
+            "description": "Commissioners Court",
+            "meetingStatus": "Upcoming",
+            "isPublished": false,
+            "agendaAttachmentId": null,
+            "minutesAttachmentId": null,
+            "hasAgenda": false,
+            "hasMinutes": false,
+            "videoId": null
+        }
+    ],
+    "total": 2,
+    "aggregateResults": null,
+    "errors": null
+}
