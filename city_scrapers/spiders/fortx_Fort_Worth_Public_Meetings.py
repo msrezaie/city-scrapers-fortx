@@ -37,8 +37,8 @@ class FortxFortWorthPublicMeetingsSpider(CityScrapersSpider):
     def start_requests(self):
         """
         The meeting items for this organization are
-        fetched from two of its API endpoints. The
-        main API endpoint allows fetching meeting
+        being fetched from two of its API endpoints.
+        The main API endpoint allows fetching meeting
         items for the entirety of one year. The
         spider is set to fetch all meetings 6 months
         in the past and 6 months in the future.
