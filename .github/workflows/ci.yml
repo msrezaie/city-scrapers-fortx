@@ -22,6 +22,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Clean environment
+        run: |
+          rm -rf .venv/
+          rm -rf ~/.local/share/virtualenvs/*
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
