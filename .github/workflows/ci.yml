@@ -22,11 +22,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Clean environment
-        run: |
-          rm -rf .venv/
-          rm -rf ~/.local/share/virtualenvs/*
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
@@ -43,6 +38,11 @@ jobs:
           restore-keys: |
             pip-${{ matrix.python-version }}-
             pip-
+
+      - name: Clean environment
+        run: |
+          rm -rf .venv/
+          rm -rf ~/.local/share/virtualenvs/*
 
       - name: Install dependencies
         run: pipenv sync --dev
