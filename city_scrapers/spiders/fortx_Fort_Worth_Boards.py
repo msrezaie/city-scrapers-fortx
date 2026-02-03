@@ -18,10 +18,10 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
     # https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US
     # API endpoint when clicking on calendar
     # https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId=788ffb59-05d1-457d-b9dd-423d4b95a06e&contentId=e3182d81-2385-4796-809f-8a330d1c7ec9&language=en-US&mainContentId=e3182d81-2385-4796-809f-8a330d1c7ec9
-    start_url = "https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US&startDate={start_date}&endDate={end_date}" # noqa
+    start_url = "https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US&startDate={start_date}&endDate={end_date}"  # noqa
 
     request_headers = {
-        "Cookie": "ASP.NET_SessionId=1v2mvxnu24xpfsrdervxj4gb; OC_EA_EmergencyAnnouncementList_Dismissed=", # noqa
+        "Cookie": "ASP.NET_SessionId=1v2mvxnu24xpfsrdervxj4gb; OC_EA_EmergencyAnnouncementList_Dismissed=",  # noqa
     }
 
     """
