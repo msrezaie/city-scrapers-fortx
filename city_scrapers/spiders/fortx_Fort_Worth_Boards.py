@@ -20,10 +20,6 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
     # https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId=788ffb59-05d1-457d-b9dd-423d4b95a06e&contentId=e3182d81-2385-4796-809f-8a330d1c7ec9&language=en-US&mainContentId=e3182d81-2385-4796-809f-8a330d1c7ec9
     start_url = "https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems?Ids=788ffb59-05d1-457d-b9dd-423d4b95a06e&LanguageCode=en-US&startDate={start_date}&endDate={end_date}"  # noqa
 
-    request_headers = {
-        "Cookie": "ASP.NET_SessionId=1v2mvxnu24xpfsrdervxj4gb; OC_EA_EmergencyAnnouncementList_Dismissed=",  # noqa
-    }
-
     """
     Spider broke after June 2025 due to changes in the API endpoint.
     Updated spider to make multiple requests for each year from June
@@ -35,12 +31,10 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
 
         first_start = "2025-06-27"
         first_end = "2025-12-31"
-
         initial_url = self.start_url.format(start_date=first_start, end_date=first_end)
 
         yield scrapy.Request(
             url=initial_url,
-            headers=self.request_headers,
             callback=self.parse,
         )
 
@@ -49,7 +43,6 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
                 url=self.start_url.format(
                     start_date=f"{year}-01-01", end_date=f"{year}-12-31"
                 ),
-                headers=self.request_headers,
                 callback=self.parse,
             )
 
@@ -64,9 +57,7 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
             for item in calendar_day["Items"]:
                 # make another API requests to get more info about meeting
                 info_url = f"https://www.fortworthtexas.gov/ocapi/get/contentinfo?calendarId={item['CalendarId']}&contentId={item['Id']}&language=en-US&mainContentId={item['Id']}"  # noqa
-                info = requests.get(info_url, headers=self.request_headers).json()[
-                    "data"
-                ]
+                info = requests.get(info_url).json()["data"]
 
                 meeting = Meeting(
                     title=item["Name"],
