@@ -1,6 +1,6 @@
+import json
 from datetime import datetime
 
-import requests
 import scrapy
 from city_scrapers_core.constants import COMMISSION
 from city_scrapers_core.items import Meeting
@@ -44,28 +44,39 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
 
     def start_requests(self):
         payload = {"committeeId": self.committee_id}
-        archived_response = requests.post(
+        yield scrapy.Request(
             url=self.archived_url,
-            json=payload,
+            method="POST",
+            body=json.dumps(payload),
             headers={"Content-Type": "application/json"},
-        ).json()
+            callback=self.parse_archived,
+        )
 
+    def parse_archived(self, response):
+        archived_response = response.json()
         archived_meetings = archived_response.get("data", [])
+
         last_archived_meeting = self._parse_datetime(
             archived_meetings[0].get("meetingStartDateTime")
         )
 
-        upcoming_response = requests.get(
+        yield scrapy.Request(
             url=self.upcoming_url.format(year=last_archived_meeting.year),
             headers={"Authorization": f"Bearer {self.bearer_token}"},
-        ).json()
+            callback=self.parse_upcoming,
+            meta={
+                "archived_meetings": archived_meetings,
+            },
+        )
+
+    def parse_upcoming(self, response):
+        upcoming_response = response.json()
+        archived_meetings = response.meta["archived_meetings"]
 
         current_year = datetime.now().year
 
-        url = self.upcoming_url.format(year=current_year)
         yield scrapy.Request(
-            url=url,
-            method="GET",
+            url=self.upcoming_url.format(year=current_year),
             headers={"Authorization": f"Bearer {self.bearer_token}"},
             callback=self.parse,
             meta={
