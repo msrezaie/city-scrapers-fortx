@@ -189,7 +189,7 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
             ]
             full_address = ", ".join(part for part in address_parts if part)
             return {
-                "address": full_address.strip(""),
+                "address": full_address.strip(),
                 "name": room_obj.get("roomName", ""),
             }
 
