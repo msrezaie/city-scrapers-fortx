@@ -59,7 +59,6 @@ class FortxFortWorthBoardsSpider(CityScrapersSpider):
                 headers={"Content-Type": "application/json"},
                 callback=self.parse,
             )
-            break
 
     def parse(self, response):
         data = response.json()
