@@ -1,12 +1,12 @@
 import json
+import re
 from datetime import datetime
 
 import scrapy
-from city_scrapers_core.constants import COMMISSION, BOARD, COMMITTEE, NOT_CLASSIFIED
+from city_scrapers_core.constants import BOARD, COMMISSION, COMMITTEE, NOT_CLASSIFIED
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
 from dateutil.parser import parse as dateparse
-import re
 
 
 class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
@@ -185,7 +185,7 @@ class FortxTarrantCountyCommissionersCourtSpider(CityScrapersSpider):
                     }
                 )
         return links
-    
+
     def _parse_video_link(self, video_url):
         video_id = re.search(r"embed/(.+?)\?", video_url)
         if video_id:
