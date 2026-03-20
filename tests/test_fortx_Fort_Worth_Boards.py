@@ -96,49 +96,9 @@ def test_source(parsed_items):
 def test_links(parsed_items):
     assert parsed_items[0]["links"] == [
         {
-            "title": "10-27-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/2/city-secretary/documents/calendar/2025-agendas/bampc/bsc/10-27-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "09-22-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/3/city-secretary/documents/calendar/2025-agendas/bampc/bsc/09-22-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "08-25-2025 Canceled BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/4/city-secretary/documents/calendar/2025-agendas/bampc/bsc/08-25-2025-canceled-bsc-stamped-agenda.pdf",  # noqa
-        },
-        {
-            "title": "07-28-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/6/city-secretary/documents/calendar/2025-agendas/bampc/bsc/07-28-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "06-23-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/2/city-secretary/documents/calendar/2025-agendas/bampc/bsc/06-23-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "05-19-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/5/city-secretary/documents/calendar/2025-agendas/bampc/bsc/05-19-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "04-28-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/2/city-secretary/documents/calendar/2025-agendas/bampc/bsc/04-28-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "03-24-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/2/city-secretary/documents/calendar/2025-agendas/bampc/bsc/03-24-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "01-27-2025-BSC-Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/4/city-secretary/documents/calendar/2025-agendas/bampc/bsc/01-27-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "02-24-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/4/city-secretary/documents/calendar/2025-agendas/bampc/bsc/02-24-2025-bsc-agenda.pdf",  # noqa
-        },
-        {
-            "title": "12-15-2025 BSC Agenda",
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/3/city-secretary/documents/calendar/2025-agendas/bampc/bsc/12-15-2025-bsc-agenda.pdf",  # noqa
-        },
+            "title": "Meeting Details",
+            "href": "https://www.fortworthtexas.gov/departments/citysecretary/events/building-standards-commission-meeting-2025",  # noqa
+        }
     ]
 
 
