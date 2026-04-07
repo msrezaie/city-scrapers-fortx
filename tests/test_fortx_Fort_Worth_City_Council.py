@@ -1,5 +1,6 @@
 from datetime import datetime
 from os.path import dirname, join
+from unittest.mock import MagicMock, patch
 
 import pytest
 import scrapy
@@ -29,19 +30,32 @@ meetings_detail = file_response(
     ),
 )
 
+detail_page_path = join(
+    dirname(__file__), "files", "fortx_Fort_Worth_City_Council_detail_page.html"
+)
+with open(detail_page_path) as f:
+    detail_page_html = f.read()
+
 spider = FortxFortWorthCityCouncilSpider()
 
 freezer = freeze_time("2024-12-19")
 freezer.start()
 
+mock_response = MagicMock()
+mock_response.text = detail_page_html
+
 parsed_items = []
 
-for req in spider.parse(meetings_items):
-    if isinstance(req, scrapy.Request):
-        meeting_detail_item = spider.parse_meeting(
-            meetings_detail, req.cb_kwargs["item"]
-        )
-        parsed_items.extend(meeting_detail_item)
+with patch(
+    "city_scrapers.spiders.fortx_Fort_Worth_City_Council.requests.get",
+    return_value=mock_response,
+):  # noqa
+    for req in spider.parse(meetings_items):
+        if isinstance(req, scrapy.Request):
+            meeting_detail_item = spider.parse_meeting(
+                meetings_detail, req.cb_kwargs["item"]
+            )
+            parsed_items.extend(meeting_detail_item)
 
 freezer.stop()
 
@@ -107,7 +121,7 @@ def test_source():
 def test_links():
     assert parsed_items[0]["links"] == [
         {
-            "href": "https://www.fortworthtexas.gov//files/assets/public/v/2/city-secretary/documents/calendar/2024-agendas/city-council/executive-session/11-05-2024-executive-session.pdf",  # noqa
+            "href": "https://www.fortworthtexas.gov//files/assets/public/v/2/city-secretary/documents/calendar/2024-agendas/city-council/executive-session/01-09-24-executive-session.pdf",  # noqa
             "title": "Agenda",
         }
     ]
