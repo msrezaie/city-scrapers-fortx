@@ -1,19 +1,19 @@
-import json
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
-import requests
 import scrapy
-from city_scrapers_core.constants import CITY_COUNCIL
+from city_scrapers_core.constants import CANCELLED, CITY_COUNCIL, PASSED, TENTATIVE
 from city_scrapers_core.items import Meeting
 from city_scrapers_core.spiders import CityScrapersSpider
-from dateutil.parser import parse as dateparse
-from dateutil.relativedelta import relativedelta
+from curl_cffi import requests as curl_requests
 
 
 class FortxFortWorthCityCouncilSpider(CityScrapersSpider):
     name = "fortx_Fort_Worth_City_Council"
     agency = "Fort Worth City Council"
     timezone = "America/Chicago"
+
+    tz = ZoneInfo(timezone)
 
     custom_settings = {
         "ROBOTSTXT_OBEY": False,
@@ -22,6 +22,7 @@ class FortxFortWorthCityCouncilSpider(CityScrapersSpider):
     main_url = "https://www.fortworthtexas.gov/"
 
     meetings_url = "https://www.fortworthtexas.gov/ocapi/calendars/getcalendaritems"
+    calendar_url = "https://www.fortworthtexas.gov/calendar/city-council"
 
     meetings_url_payload = {
         "LanguageCode": "en-US",
@@ -44,30 +45,41 @@ class FortxFortWorthCityCouncilSpider(CityScrapersSpider):
         items for the entirety of one year. The
         spider is set to fetch all meetings 6 months
         in the past and 6 months in the future.
+
+        Uses curl_cffi for POST requests to bypass
+        TLS fingerprinting / WAF bot protection.
         """
-        current_date = datetime.now()
+        current_date = datetime.now(tz=self.tz)
         payloads = self.construct_payloads(current_date)
 
         for payload in payloads:
             if payload["StartDate"] == payload["EndDate"]:
                 continue
-            yield scrapy.Request(
-                url=self.meetings_url,
-                method="POST",
-                body=json.dumps(payload),
-                headers={"Content-Type": "application/json"},
-                callback=self.parse,
+
+            response = curl_requests.post(
+                self.meetings_url,
+                json=payload,
+                impersonate="chrome120",
             )
 
-    def parse(self, response):
-        data = response.json()
+            if response.status_code != 200:
+                self.logger.warning(
+                    f"Unexpected response from {self.meetings_url}: "
+                    f"status={response.status_code}"
+                )
+                continue
 
+            yield from self.parse(response.json())
+
+    def parse(self, data):
         items = []
         for meeting in data["data"]:
             items.extend(meeting["Items"])
 
         for item in items:
-            date_obj = datetime.strptime(item["DateTime"], "%d/%m/%Y %I:%M:%S %p")
+            date_obj = datetime.strptime(
+                item["DateTime"], "%d/%m/%Y %I:%M:%S %p"
+            ).replace(tzinfo=self.tz)
             currentDateTime = date_obj.strftime("%d/%m/%Y%%20%I:%M:%S%%20%p")
 
             meeting_detail_url = self.meeting_detail_url.format(
@@ -88,25 +100,21 @@ class FortxFortWorthCityCouncilSpider(CityScrapersSpider):
         data = response.json()
         meeting_data = data["data"]
 
-        meetings_detail_url = meeting_data["Link"]
-
-        try:
-            details_page = requests.get(meetings_detail_url).text
-        except requests.RequestException as e:
-            self.logger.error("Failed to retrieve details page: %s", e)
-            return
+        meeting_start = datetime.strptime(
+            item["DateTime"], "%d/%m/%Y %I:%M:%S %p"
+        ).replace(tzinfo=self.tz)
 
         meeting = Meeting(
             title=meeting_data["Title"],
             description=meeting_data["Description"],
             classification=CITY_COUNCIL,
-            start=dateparse(item["DateTime"]),
+            start=meeting_start.replace(tzinfo=None),
             end=None,
             all_day=False,
             time_notes="Please check the meeting description for details on the start time",  # noqa
             location=self._parse_location(meeting_data),
-            links=self._parse_links(details_page),
-            source=meeting_data.get("Link", response.url),
+            links=self._parse_links(meeting_data),
+            source=meeting_data.get("Link", self.calendar_url),
         )
 
         meeting["status"] = self._parse_status(meeting, meeting_data)
@@ -115,9 +123,22 @@ class FortxFortWorthCityCouncilSpider(CityScrapersSpider):
         yield meeting
 
     def _parse_status(self, meeting, item):
-        if item["IsCancelled"]:
-            return "cancelled"
-        return self._get_status(meeting)
+        """
+        The get status method is overriden to only check the meeting
+        title and not the description as some meetings have the word
+        "cancelled" in the description but are not actually cancelled.
+        """
+        meeting_text = meeting.get("title", "").lower()
+        is_cancelled = item.get("IsCancelled", False)
+
+        if (
+            any(word in meeting_text for word in ["cancel", "rescheduled", "postpone"])
+            or is_cancelled
+        ):
+            return CANCELLED
+        if meeting["start"] < datetime.now():
+            return PASSED
+        return TENTATIVE
 
     def _parse_location(self, item):
         """
@@ -134,54 +155,27 @@ class FortxFortWorthCityCouncilSpider(CityScrapersSpider):
             return {"name": "City Hall", "address": "200 Texas St., Fort Worth, 76102"}
         return {"name": name, "address": address}
 
-    def _parse_links(self, response):
-        selector = scrapy.Selector(text=response)
-        links = []
-        attachment_div = selector.css(".side-box.consultation-snapshot")
-        attachment_hint = (
-            attachment_div.css(".side-box-title::text").get(default="").strip()
-        )
-        attachment_link = attachment_div.css(
-            ".side-box-section.body-content a::attr(href)"
-        ).get()
-
-        if attachment_link is not None:
-            if "agenda" in attachment_hint.lower():
-                links.append(
-                    {"href": self.main_url + attachment_link, "title": "Agenda"}
-                )
-            if "minutes" in attachment_hint.lower():
-                links.append(
-                    {"href": self.main_url + attachment_link, "title": "Minutes"}
-                )
-            if "notice" in attachment_hint.lower():
-                links.append(
-                    {"href": self.main_url + attachment_link, "title": "Public Notice"}
-                )
-
-        return links
+    def _parse_links(self, meeting_data):
+        if href := meeting_data["Link"]:
+            return [
+                {"title": "Meeting Details", "href": href},
+            ]
+        return []
 
     def construct_payloads(self, current_date):
         """
         The start and end dates parameters for this organization main
         API endpoint requires the dates to be within the same year.
         This means it can't be used to fetch meetings spanning months
-        from different years. This method constructs start and end date
-        ranges from the current date to 6 months in the past and 6 months
-        in the future.
+        from different years. This method constructs date ranges for the
+        current year, one year to the past and one year to the future.
         """
-        past = current_date - relativedelta(months=6)
-        future = current_date + relativedelta(months=6)
-
         payloads = []
 
-        first_payload = self.meetings_url_payload.copy()
-        first_payload["StartDate"] = str(past)
-        first_payload["EndDate"] = str(past.replace(month=12, day=31))
-        second_payload = self.meetings_url_payload.copy()
-        second_payload["StartDate"] = str(future.replace(month=1, day=1))
-        second_payload["EndDate"] = str(future)
-        payloads.append(first_payload)
-        payloads.append(second_payload)
+        for year in range(current_date.year - 1, current_date.year + 2):
+            payload = self.meetings_url_payload.copy()
+            payload["StartDate"] = str(datetime(year, 1, 1, tzinfo=self.tz))
+            payload["EndDate"] = str(datetime(year, 12, 31, tzinfo=self.tz))
+            payloads.append(payload)
 
         return payloads
