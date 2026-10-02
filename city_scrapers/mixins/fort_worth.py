@@ -80,6 +80,7 @@ class FortWorthMixin(CityScrapersSpider, metaclass=FortWorthMixinMeta):
     item_datetime_format = "%d/%m/%Y %I:%M:%S %p"
     time_notes = "Please check the meeting source for details on the start time"
     cancel_re = re.compile(r"cancel|postpone|reschedul", re.IGNORECASE)
+    cancel_only_re = re.compile(r"cancel", re.IGNORECASE)
     # The sentence pointing to agendas, e.g. "View agenda and meeting
     # details.", "Veiw agenda", "View the past agendas", "View updated
     # agendas here with the next scheduled meeting details."
@@ -340,7 +341,8 @@ class FortWorthMixin(CityScrapersSpider, metaclass=FortWorthMixinMeta):
         CANCELED TIF 13 Agenda", or when a header notice names it, e.g.
         "12/15/2025 Art Commission meeting CANCELED!". A header notice
         without a date, e.g. "HEARING CANCELED", applies to the "Next date"
-        shown above it.
+        shown above it. A postponed or rescheduled notice only cancels its
+        first date, not the date it moved to.
         """
         if not isinstance(response, TextResponse):
             return None
@@ -352,12 +354,14 @@ class FortWorthMixin(CityScrapersSpider, metaclass=FortWorthMixinMeta):
             href = doc.attrib.get("href", "")
             filename = href.rsplit("/", 1)[-1]
 
-            if any(self.cancel_re.search(part) for part in (text, title, filename)):
-                cancelled_dates.update(
+            parts = (text, title, filename)
+            if any(self.cancel_re.search(part) for part in parts):
+                doc_dates = (
                     self._parse_document_dates(text)
                     or self._parse_document_dates(title)
                     or self._parse_document_dates(filename)
                 )
+                cancelled_dates.update(self._source_dates(doc_dates, parts))
 
         header = response.xpath("//h1[contains(@class, 'oc-page-title')]/..")
         if header:
@@ -373,7 +377,7 @@ class FortWorthMixin(CityScrapersSpider, metaclass=FortWorthMixinMeta):
             )
             for notice in filter(self.cancel_re.search, notices):
                 if notice_dates := self._parse_notice_dates(notice):
-                    cancelled_dates.update(notice_dates)
+                    cancelled_dates.update(self._source_dates(notice_dates, [notice]))
                 elif next_date:
                     cancelled_dates.add(next_date)
                 elif not cancelled_dates:
@@ -383,6 +387,13 @@ class FortWorthMixin(CityScrapersSpider, metaclass=FortWorthMixinMeta):
                     )
 
         return cancelled_dates
+
+    def _source_dates(self, dates, texts):
+        # "10/15/2026 meeting rescheduled to 10/20/2026" moves the meeting
+        # rather than cancelling 10/20
+        if any(self.cancel_only_re.search(text) for text in texts):
+            return dates
+        return dates[:1]
 
     def _parse_document_dates(self, text):
         dates = []
